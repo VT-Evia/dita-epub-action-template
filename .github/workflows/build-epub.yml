@@ -1,0 +1,148 @@
+name: 'Build EPUB with ditac'
+description: 'Convert a DITA map to EPUB/EPUB3 using XMLmind DITA Converter (ditac)'
+author: 'VT-Evia'
+branding:
+  color: blue
+  icon: book
+
+inputs:
+  map:
+    description: 'Path to the DITA map or bookmap (e.g., docs/document.ditamap or docs/bookmap.ditamap)'
+    required: true
+  output:
+    description: 'Output .epub path (e.g., out/book.epub)'
+    required: true
+  format:
+    description: 'Target format: epub or epub3 (also inferred from .epub extension)'
+    required: false
+    default: 'epub3'
+  resources-dir:
+    description: 'xsl-resources-directory (CSS/images); created if missing'
+    required: false
+    default: 'res'
+  ditac-version:
+    description: 'ditac version tag, e.g., 3_17_2'
+    required: false
+    default: '3_17_2'
+  java-version:
+    description: 'Java version to install (ditac supports Java 8+).'
+    required: false
+    default: '17'
+  extra-args:
+    description: 'Additional arguments passed to ditac (advanced).'
+    required: false
+    default: ''
+  validate-with-epubcheck:
+    description: 'Run EPUBCheck after build (true/false).'
+    required: false
+    default: 'true'
+  epubcheck-version:
+    description: 'EPUBCheck version (used if validate-with-epubcheck=true).'
+    required: false
+    default: '5.1.0'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: ${{ inputs.java-version }}
+
+    # Cache ditac by version (folder name may vary; use a glob)
+    - name: Restore ditac cache
+      id: cache-ditac
+      uses: actions/cache@v4
+      with:
+        path: ditac-${{ inputs.ditac-version }}*
+        key: ditac-${{ inputs.ditac-version }}
+
+    - name: Download ditac
+      if: steps.cache-ditac.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        set -euo pipefail
+        VERSION="${{ inputs.ditac-version }}"
+        URL="https://www.xmlmind.com/ditac/_download/ditac-${VERSION}.zip"
+        echo "Attempting: $URL"
+        curl -fsSL -o ditac.zip "$URL"
+
+        # Clean any stale directories to avoid unzip prompts
+        rm -rf "ditac-${VERSION}"* || true
+
+        unzip -o -q ditac.zip
+        rm -f ditac.zip
+
+        echo "Top-level after unzip:"
+        ls -lah
+
+    - name: Locate ditac and set env
+      shell: bash
+      run: |
+        set -euo pipefail
+        # Find the actual launcher regardless of folder naming
+        CANDIDATE="$(find "$GITHUB_WORKSPACE" -maxdepth 3 -type f -path "*/bin/ditac" | head -n1 || true)"
+        if [[ -z "${CANDIDATE:-}" ]]; then
+          echo "Could not find bin/ditac after unzip." >&2
+          ls -R || true
+          exit 1
+        fi
+        DITAC_DIR="$(dirname "$(dirname "$CANDIDATE")")"
+        echo "Using ditac in: $DITAC_DIR"
+        echo "DITAC_DIR=$DITAC_DIR" >> "$GITHUB_ENV"
+        chmod +x "$DITAC_DIR/bin/ditac" || true
+        "$DITAC_DIR/bin/ditac" -version || true
+
+    - name: Ensure directories
+      shell: bash
+      run: |
+        set -euo pipefail
+        mkdir -p "${{ inputs.resources-dir }}"
+        mkdir -p "$(dirname "${{ inputs.output }}")"
+
+    - name: Build EPUB
+      shell: bash
+      run: |
+        set -euo pipefail
+        # Guardrail: ensure output ends with .epub
+        case "${{ inputs.output }}" in
+          *.epub) : ;;
+          *) echo "Output must end with .epub (got '${{ inputs.output }}')." >&2; exit 2 ;;
+        esac
+
+        FMT="${{ inputs.format }}"
+        FORMAT_OPT=""
+        if [ "$FMT" = "epub3" ]; then FORMAT_OPT="-format epub3"; fi
+
+        # Use absolute path to avoid PATH propagation issues
+        "$DITAC_DIR/bin/ditac" -r . \
+          -p xsl-resources-directory "${{ inputs.resources-dir }}" \
+          $FORMAT_OPT \
+          ${{ inputs.extra-args }} \
+          "${{ inputs.output }}" "${{ inputs.map }}"
+
+    - name: (Optional) Download EPUBCheck
+      if: inputs.validate-with-epubcheck == 'true'
+      shell: bash
+      run: |
+        set -euo pipefail
+        EC_VER="${{ inputs.epubcheck-version }}"
+        curl -fsSL -o epubcheck.zip "https://github.com/w3c/epubcheck/releases/download/v${EC_VER}/epubcheck-${EC_VER}.zip"
+        unzip -q epubcheck.zip
+        rm -f epubcheck.zip
+        echo "EPUBCHECK_JAR=$GITHUB_WORKSPACE/epubcheck-${EC_VER}/epubcheck.jar" >> "$GITHUB_ENV"
+
+    - name: (Optional) Validate EPUB
+      if: inputs.validate-with-epubcheck == 'true'
+      shell: bash
+      run: |
+        set -euo pipefail
+        java -jar "$EPUBCHECK_JAR" "${{ inputs.output }}"
+
+    - name: List output (debug)
+      shell: bash
+      run: |
+        set -euo pipefail
+        echo "Output directory:"
+        ls -lah "$(dirname "${{ inputs.output }}")"
