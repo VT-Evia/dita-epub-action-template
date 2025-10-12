@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="trademarks">
+  <title>Trademarks</title>
+  <shortdesc>Trademark acknowledgments.</shortdesc>
+  <body>
+    <ul>
+      <li>DITA is a trademark or registered trademark of OASIS.</li>
+      <li>Other product and company names may be trademarks of their respective owners.</li>
+    </ul>
+  </body>
+</topic>

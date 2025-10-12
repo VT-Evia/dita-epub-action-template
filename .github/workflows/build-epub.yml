@@ -1,0 +1,29 @@
+name: Build EPUB
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  epub:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build EPUB 3 with ditac
+        uses: VT-Evia/ditac-epub-action@v1
+        with:
+          map: docs/document.ditamap
+          output: out/book.epub
+          format: epub3
+          resources-dir: docs/res
+          validate-with-epubcheck: 'true'
+
+      - name: Upload EPUB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: book-epub
+          path: out/book.epub

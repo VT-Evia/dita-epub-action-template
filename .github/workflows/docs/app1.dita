@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="appendix-1">
+  <title>Appendix A</title>
+  <shortdesc>Supplementary information.</shortdesc>
+  <body>
+    <p>Reference notes that support the main text.</p>
+  </body>
+</topic>

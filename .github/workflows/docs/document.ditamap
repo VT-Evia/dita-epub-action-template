@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE map PUBLIC "-//OASIS//DTD DITA Map//EN" "map.dtd">
+<bookmap xml:lang="en-us">
+  <booktitle>
+    <booklibrary>Books about stuff</booklibrary>
+    <mainbooktitle>A book about one thing</mainbooktitle>
+  </booktitle>
+  <bookmeta>
+    <bookrights>
+      <copyrfirst><year>1994</year></copyrfirst>
+      <copyrlast><year>2025</year></copyrlast>
+      <bookowner>OASIS</bookowner>
+    </bookrights>
+  </bookmeta>
+  <frontmatter>
+    <booklists>
+      <toc/>
+      <figurelist/>
+      <tablelist/>
+    </booklists>
+    <bookabstract href="MyBookAbstract.dita"/>
+    <preface href="preface.dita"></preface>
+  </frontmatter>
+  <chapter href="chapter1.dita">
+    <topicref href="subchap1.dita"></topicref>
+  </chapter>
+  <chapter href="chapter2.dita">
+    <topicref href="subchap2.dita"></topicref>
+  </chapter>
+  <appendix href="app1.dita">
+    <topicref href="insideApp1.dita"></topicref>
+  </appendix>
+  <appendix href="app2.dita">
+    <topicref href="insideApp2.dita"></topicref>
+  </appendix>
+  <backmatter>
+    <amendments href="updatesToTheBook.dita"/>
+    <booklists>
+      <trademarklist href="listoftrademarks.dita"/>
+      <indexlist/>
+    </booklists>
+  </backmatter>
+</bookmap>

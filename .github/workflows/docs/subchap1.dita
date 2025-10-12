@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="subchapter-1">
+  <title>Subchapter 1</title>
+  <shortdesc>Details related to Chapter 1.</shortdesc>
+  <body>
+    <p>Supporting details and a short example.</p>
+  </body>
+</topic>

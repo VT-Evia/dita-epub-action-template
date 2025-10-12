@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="preface">
+  <title>Preface</title>
+  <shortdesc>Notes to the reader.</shortdesc>
+  <body>
+    <p>This preface provides brief context for the material that follows.</p>
+  </body>
+</topic>
