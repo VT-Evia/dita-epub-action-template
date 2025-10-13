@@ -1,0 +1,34 @@
+# Build outputs & artifacts
+out/
+dist/
+build/
+*.log
+*.tmp
+
+# Tool downloads (CI caches/unzips these)
+ditac-*/
+epubcheck-*/
+*.zip
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+*.iml
+
+# Node/JS (in case you add scripts or a demo site)
+node_modules/
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Python (if you experiment locally)
+.venv/
+__pycache__/
+*.py[cod]
+
+# GitHub Actions local testing
+.act/
