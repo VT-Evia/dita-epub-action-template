@@ -1,5 +1,0 @@
-{
-  "ditacraft.ditaOtPath": "/opt/dita-ot",
-  "ditacraft.defaultTranstype": "html5",
-  "ditacraft.outputDirectory": "${workspaceFolder}/out"
-}
